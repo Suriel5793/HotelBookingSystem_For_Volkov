@@ -21,5 +21,13 @@ namespace Diplom.Models
                 Rooms.Add(new HotelRoom { RoomId = NextRoomId++, RoomNumber = "201", Category = "Люкс", BasePricePerNight = 8000, Capacity = 4, Status = "свободен", CreatedAt = System.DateTime.Now, UpdatedAt = System.DateTime.Now });
             }
         }
+        public static void LoadFromDatabase()
+        {
+            var db = new Services.DatabaseService();
+            if (db.TestConnection())
+            {
+                db.LoadAllDataToStore();
+            }
+        }
     }
 }
