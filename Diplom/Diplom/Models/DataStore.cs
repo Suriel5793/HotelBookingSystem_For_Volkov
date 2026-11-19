@@ -12,5 +12,14 @@ namespace Diplom.Models
         public static double LastMu { get; set; } = 0.5;
         public static int LastC { get; set; } = 100;
         public static User CurrentUser { get; set; }
+        public static void InitTestData()
+        {
+            if (Rooms.Count == 0)
+            {
+                Rooms.Add(new HotelRoom { RoomId = NextRoomId++, RoomNumber = "101", Category = "Стандарт", BasePricePerNight = 3000, Capacity = 2, Status = "свободен", CreatedAt = System.DateTime.Now, UpdatedAt = System.DateTime.Now });
+                Rooms.Add(new HotelRoom { RoomId = NextRoomId++, RoomNumber = "102", Category = "Стандарт", BasePricePerNight = 3000, Capacity = 2, Status = "свободен", CreatedAt = System.DateTime.Now, UpdatedAt = System.DateTime.Now });
+                Rooms.Add(new HotelRoom { RoomId = NextRoomId++, RoomNumber = "201", Category = "Люкс", BasePricePerNight = 8000, Capacity = 4, Status = "свободен", CreatedAt = System.DateTime.Now, UpdatedAt = System.DateTime.Now });
+            }
+        }
     }
 }
