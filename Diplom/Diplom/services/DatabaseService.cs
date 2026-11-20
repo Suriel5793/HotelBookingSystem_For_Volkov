@@ -51,5 +51,24 @@ namespace Diplom.Services
                 }
             }
         }
+        public bool TablesExist()
+        {
+            try
+            {
+                using (var conn = new NpgsqlConnection(DbConnectionString))
+                {
+                    conn.Open();
+                    string sql = "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'hotel_rooms'";
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    {
+                        return (long)cmd.ExecuteScalar() > 0;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
