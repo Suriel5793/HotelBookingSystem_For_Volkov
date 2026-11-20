@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows.Forms;
+using Npgsql;
+using Diplom.Models;
 
 namespace Diplom.Services
 {
@@ -16,9 +17,8 @@ namespace Diplom.Services
 
         private string MasterConnectionString => $"Host={_host};Port={_port};Username={_username};Password={_password};Database=postgres";
         private string DbConnectionString => $"Host={_host};Port={_port};Username={_username};Password={_password};Database={_databaseName}";
-    }
 
-            public bool DatabaseExists()
+        public bool DatabaseExists()
         {
             try
             {
@@ -51,6 +51,7 @@ namespace Diplom.Services
                 }
             }
         }
+
         public bool TablesExist()
         {
             try
@@ -70,6 +71,7 @@ namespace Diplom.Services
                 return false;
             }
         }
+
         public void CreateTables()
         {
             string sql = @"
@@ -161,46 +163,47 @@ CREATE TRIGGER update_bookings_updated_at
                 }
             }
         }
-    }
-           public void InitializeDatabase()
-{
-    if (!DatabaseExists())
-    {
-        CreateDatabase();
-        System.Threading.Thread.Sleep(500); // Ждем, пока PostgreSQL создаст БД
-    }
 
-    if (!TablesExist())
-    {
-        CreateTables();
-    }
-
-    // Миграция для добавления колонки затрат (Экономика)
-    try
-    {
-        using (var conn = new NpgsqlConnection(DbConnectionString))
+        public void InitializeDatabase()
         {
-            conn.Open();
-            string alterSql = "ALTER TABLE Hotel_Rooms ADD COLUMN IF NOT EXISTS maintenance_cost DECIMAL(10,2) DEFAULT 1500.00;";
-            using (var cmd = new NpgsqlCommand(alterSql, conn)) cmd.ExecuteNonQuery();
+            if (!DatabaseExists())
+            {
+                CreateDatabase();
+                System.Threading.Thread.Sleep(500); // Ждем, пока PostgreSQL создаст БД
+            }
+
+            if (!TablesExist())
+            {
+                CreateTables();
+            }
+
+            // Миграция для добавления колонки затрат (Экономика)
+            try
+            {
+                using (var conn = new NpgsqlConnection(DbConnectionString))
+                {
+                    conn.Open();
+                    string alterSql = "ALTER TABLE Hotel_Rooms ADD COLUMN IF NOT EXISTS maintenance_cost DECIMAL(10,2) DEFAULT 1500.00;";
+                    using (var cmd = new NpgsqlCommand(alterSql, conn)) cmd.ExecuteNonQuery();
+                }
+            }
+            catch { /* Игнорируем, если колонка уже есть */ }
+        }
+
+        public bool TestConnection()
+        {
+            try
+            {
+                using (var conn = new NpgsqlConnection(DbConnectionString))
+                {
+                    conn.Open();
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
-    catch { /* Игнорируем, если колонка уже есть */ }
-}
-
-public bool TestConnection()
-{
-    try
-    {
-        using (var conn = new NpgsqlConnection(DbConnectionString))
-        {
-            conn.Open();
-            return true;
-        }
-    }
-    catch
-    {
-        return false;
-    }
-}
 }
