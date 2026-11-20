@@ -162,4 +162,29 @@ CREATE TRIGGER update_bookings_updated_at
             }
         }
     }
+            public void InitializeDatabase()
+{
+    if (!DatabaseExists())
+    {
+        CreateDatabase();
+        System.Threading.Thread.Sleep(500); // Ждем, пока PostgreSQL создаст БД
+    }
+
+    if (!TablesExist())
+    {
+        CreateTables();
+    }
+
+    // Миграция для добавления колонки затрат (Экономика)
+    try
+    {
+        using (var conn = new NpgsqlConnection(DbConnectionString))
+        {
+            conn.Open();
+            string alterSql = "ALTER TABLE Hotel_Rooms ADD COLUMN IF NOT EXISTS maintenance_cost DECIMAL(10,2) DEFAULT 1500.00;";
+            using (var cmd = new NpgsqlCommand(alterSql, conn)) cmd.ExecuteNonQuery();
+        }
+    }
+    catch { /* Игнорируем, если колонка уже есть */ }
+}
 }
