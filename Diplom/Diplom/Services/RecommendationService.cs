@@ -123,5 +123,17 @@ namespace Diplom.Services
             }
             return bestC;
         }
+
+        public decimal CalculateOptimalPrice(decimal basePrice, double rho)
+        {
+            if (rho > 0.85)
+                return basePrice * 1.3m;
+            else if (rho > 0.7)
+                return basePrice * 1.1m;
+            else if (rho < 0.4)
+                return basePrice * 0.8m;
+            else
+                return basePrice;
+        }
     }
 }
