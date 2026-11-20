@@ -93,5 +93,35 @@ namespace Diplom.Services
 
             return recommendations;
         }
+
+        public int FindOptimalCByProfit(double lambda, double mu, decimal avgPrice, decimal avgCost)
+        {
+            var calculator = new MmcCalculator();
+            double maxProfit = double.MinValue;
+            int bestC = -1;
+
+            for (int c = 1; c <= 500; c++)
+            {
+                double rho = lambda / (c * mu);
+                if (rho >= 1) continue;
+
+                var input = new QueueModel { Lambda = lambda, Mu = mu, C = c };
+                var result = calculator.Calculate(input);
+
+                if (result.P_reject > 0.05) continue;
+
+                double occupiedRooms = c * result.Rho;
+                double revenue = occupiedRooms * (double)avgPrice;
+                double costs = c * (double)avgCost;
+                double profit = revenue - costs;
+
+                if (profit > maxProfit)
+                {
+                    maxProfit = profit;
+                    bestC = c;
+                }
+            }
+            return bestC;
+        }
     }
 }
