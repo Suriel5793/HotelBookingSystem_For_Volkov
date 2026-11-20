@@ -162,7 +162,7 @@ CREATE TRIGGER update_bookings_updated_at
             }
         }
     }
-            public void InitializeDatabase()
+           public void InitializeDatabase()
 {
     if (!DatabaseExists())
     {
@@ -186,5 +186,21 @@ CREATE TRIGGER update_bookings_updated_at
         }
     }
     catch { /* Игнорируем, если колонка уже есть */ }
+}
+
+public bool TestConnection()
+{
+    try
+    {
+        using (var conn = new NpgsqlConnection(DbConnectionString))
+        {
+            conn.Open();
+            return true;
+        }
+    }
+    catch
+    {
+        return false;
+    }
 }
 }
