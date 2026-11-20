@@ -64,5 +64,14 @@ namespace Diplom.Services
 
             return result;
         }
+
+        private double LogFactorial(int n)
+        {
+            if (n <= 1) return 0;
+            double res = 0;
+            for (int i = 2; i <= n; i++)
+                res += Math.Log(i);
+            return res;
+        }
     }
 }
