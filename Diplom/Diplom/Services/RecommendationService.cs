@@ -135,5 +135,11 @@ namespace Diplom.Services
             else
                 return basePrice;
         }
+
+        public decimal ForecastRevenue(double lambda, double pReject, decimal avgPrice, int days = 30)
+        {
+            double acceptedBookings = lambda * (1 - pReject);
+            return (decimal)(acceptedBookings * days) * avgPrice;
+        }
     }
 }
