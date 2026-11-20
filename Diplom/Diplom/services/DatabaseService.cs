@@ -18,7 +18,7 @@ namespace Diplom.Services
         private string DbConnectionString => $"Host={_host};Port={_port};Username={_username};Password={_password};Database={_databaseName}";
     }
 
-    public bool DatabaseExists()
+            public bool DatabaseExists()
         {
             try
             {
@@ -38,4 +38,18 @@ namespace Diplom.Services
                 return false;
             }
         }
+
+        public void CreateDatabase()
+        {
+            using (var conn = new NpgsqlConnection(MasterConnectionString))
+            {
+                conn.Open();
+                string sql = $"CREATE DATABASE {_databaseName}";
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
+}
