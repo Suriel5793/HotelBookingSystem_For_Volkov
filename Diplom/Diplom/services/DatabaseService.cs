@@ -269,5 +269,28 @@ CREATE TRIGGER update_bookings_updated_at
             }
             return null;
         }
+        public int AddRoomAndGetId(HotelRoom room)
+        {
+            string sql = @"INSERT INTO Hotel_Rooms (category, room_number, base_price_per_night, capacity, status, maintenance_cost, created_at, updated_at) 
+                           VALUES (@category, @room_number, @price, @capacity, @status, @maintenance_cost, @created_at, @updated_at)
+                           RETURNING room_id";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@category", room.Category);
+                    cmd.Parameters.AddWithValue("@room_number", room.RoomNumber);
+                    cmd.Parameters.AddWithValue("@price", room.BasePricePerNight);
+                    cmd.Parameters.AddWithValue("@capacity", room.Capacity);
+                    cmd.Parameters.AddWithValue("@status", room.Status);
+                    cmd.Parameters.AddWithValue("@created_at", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@updated_at", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@maintenance_cost", room.MaintenanceCost);
+                    return (int)cmd.ExecuteScalar();
+                }
+            }
+        }
     }
 }
