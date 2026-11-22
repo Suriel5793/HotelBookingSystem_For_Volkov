@@ -292,5 +292,34 @@ CREATE TRIGGER update_bookings_updated_at
                 }
             }
         }
+        public void UpdateRoom(HotelRoom room)
+        {
+            string sql = @"UPDATE Hotel_Rooms SET 
+                           category = @category,
+                           room_number = @room_number,
+                           base_price_per_night = @price,
+                           capacity = @capacity,
+                           status = @status,
+                           maintenance_cost = @maintenance_cost,
+                           updated_at = @updated_at
+                           WHERE room_id = @room_id";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@room_id", room.RoomId);
+                    cmd.Parameters.AddWithValue("@category", room.Category);
+                    cmd.Parameters.AddWithValue("@room_number", room.RoomNumber);
+                    cmd.Parameters.AddWithValue("@price", room.BasePricePerNight);
+                    cmd.Parameters.AddWithValue("@capacity", room.Capacity);
+                    cmd.Parameters.AddWithValue("@status", room.Status);
+                    cmd.Parameters.AddWithValue("@updated_at", DateTime.Now);
+                    cmd.Parameters.AddWithValue("@maintenance_cost", room.MaintenanceCost);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
