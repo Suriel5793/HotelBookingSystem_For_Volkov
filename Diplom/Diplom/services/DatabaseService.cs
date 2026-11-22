@@ -577,5 +577,30 @@ CREATE TRIGGER update_bookings_updated_at
             }
             return null;
         }
+        public List<User> GetAllUsers()
+        {
+            var users = new List<User>();
+            string sql = "SELECT user_id, login, role, created_at FROM Users ORDER BY user_id";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        users.Add(new User
+                        {
+                            UserId = reader.GetInt32(0),
+                            Login = reader.GetString(1),
+                            Role = reader.GetString(2),
+                            CreatedAt = reader.GetDateTime(3)
+                        });
+                    }
+                }
+            }
+            return users;
+        }
     }
 }
