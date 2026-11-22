@@ -205,5 +205,37 @@ CREATE TRIGGER update_bookings_updated_at
                 return false;
             }
         }
+        // ========== МЕТОДЫ ДЛЯ НОМЕРОВ ==========
+
+        public List<HotelRoom> GetAllRooms()
+        {
+            var rooms = new List<HotelRoom>();
+            string sql = "SELECT room_id, category, room_number, base_price_per_night, capacity, status, maintenance_cost, created_at, updated_at FROM Hotel_Rooms";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        rooms.Add(new HotelRoom
+                        {
+                            RoomId = reader.GetInt32(0),
+                            Category = reader.GetString(1),
+                            RoomNumber = reader.GetString(2),
+                            BasePricePerNight = reader.GetDecimal(3),
+                            Capacity = reader.GetInt32(4),
+                            Status = reader.GetString(5),
+                            MaintenanceCost = reader.GetDecimal(6),
+                            CreatedAt = reader.GetDateTime(7),
+                            UpdatedAt = reader.GetDateTime(8)
+                        });
+                    }
+                }
+            }
+            return rooms;
+        }
     }
 }
