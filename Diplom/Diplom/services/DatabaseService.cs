@@ -335,5 +335,39 @@ CREATE TRIGGER update_bookings_updated_at
                 }
             }
         }
+        // ========== МЕТОДЫ ДЛЯ БРОНИРОВАНИЙ ==========
+
+        public List<Booking> GetAllBookings()
+        {
+            var bookings = new List<Booking>();
+            string sql = "SELECT booking_id, room_id, check_in_date, check_out_date, guest_count, total_price, booking_source, status, customer_email, customer_phone, notes FROM Bookings";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        bookings.Add(new Booking
+                        {
+                            BookingId = reader.GetInt32(0),
+                            RoomId = reader.GetInt32(1),
+                            CheckInDate = reader.GetDateTime(2),
+                            CheckOutDate = reader.GetDateTime(3),
+                            GuestCount = reader.GetInt32(4),
+                            TotalPrice = reader.GetDecimal(5),
+                            BookingSource = reader.GetString(6),
+                            Status = reader.GetString(7),
+                            CustomerEmail = reader.IsDBNull(8) ? "" : reader.GetString(8),
+                            CustomerPhone = reader.IsDBNull(9) ? "" : reader.GetString(9),
+                            Notes = reader.IsDBNull(10) ? "" : reader.GetString(10)
+                        });
+                    }
+                }
+            }
+            return bookings;
+        }
     }
 }
