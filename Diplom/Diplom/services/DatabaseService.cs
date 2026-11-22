@@ -624,5 +624,19 @@ CREATE TRIGGER update_bookings_updated_at
                 }
             }
         }
+        public void DeleteUser(int userId)
+        {
+            string sql = "DELETE FROM Users WHERE user_id = @id";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", userId);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
