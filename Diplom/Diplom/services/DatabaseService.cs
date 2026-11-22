@@ -751,5 +751,24 @@ CREATE TRIGGER update_bookings_updated_at
                 return 0;
             }
         }
+        public double GetFactorsImpact(DateTime date)
+        {
+            string sql = @"
+                SELECT COALESCE(SUM(impact_coefficient - 1), 0)
+                FROM External_Factors 
+                WHERE date <= @date AND date >= @date - INTERVAL '7 days'";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@date", date);
+                    var result = cmd.ExecuteScalar();
+                    double sum = result == DBNull.Value ? 0 : Convert.ToDouble(result);
+                    return 1.0 + sum;
+                }
+            }
+        }
     }
 }
