@@ -486,5 +486,24 @@ CREATE TRIGGER update_bookings_updated_at
             }
             return factors;
         }
+        public void AddFactor(ExternalFactor factor)
+        {
+            string sql = @"INSERT INTO External_Factors (type, date, value, impact_coefficient, description) 
+                           VALUES (@type, @date, @value, @impact, @desc)";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@type", factor.Type);
+                    cmd.Parameters.AddWithValue("@date", factor.Date);
+                    cmd.Parameters.AddWithValue("@value", factor.Value);
+                    cmd.Parameters.AddWithValue("@impact", factor.ImpactCoefficient);
+                    cmd.Parameters.AddWithValue("@desc", string.IsNullOrEmpty(factor.Description) ? DBNull.Value : (object)factor.Description);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
