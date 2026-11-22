@@ -237,5 +237,37 @@ CREATE TRIGGER update_bookings_updated_at
             }
             return rooms;
         }
+        public HotelRoom GetRoomById(int roomId)
+        {
+            string sql = "SELECT room_id, category, room_number, base_price_per_night, capacity, status, maintenance_cost, created_at, updated_at FROM Hotel_Rooms WHERE room_id = @id";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", roomId);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new HotelRoom
+                            {
+                                RoomId = reader.GetInt32(0),
+                                Category = reader.GetString(1),
+                                RoomNumber = reader.GetString(2),
+                                BasePricePerNight = reader.GetDecimal(3),
+                                Capacity = reader.GetInt32(4),
+                                Status = reader.GetString(5),
+                                MaintenanceCost = reader.GetDecimal(6),
+                                CreatedAt = reader.GetDateTime(7),
+                                UpdatedAt = reader.GetDateTime(8)
+                            };
+                        }
+                    }
+                }
+            }
+            return null;
+        }
     }
 }
