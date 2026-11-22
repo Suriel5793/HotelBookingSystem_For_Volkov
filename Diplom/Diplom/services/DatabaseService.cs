@@ -505,5 +505,27 @@ CREATE TRIGGER update_bookings_updated_at
                 }
             }
         }
+        public void UpdateFactor(ExternalFactor factor)
+        {
+            string sql = @"UPDATE External_Factors SET 
+                           type = @type, date = @date, value = @value, 
+                           impact_coefficient = @impact, description = @desc
+                           WHERE factor_id = @id";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", factor.FactorId);
+                    cmd.Parameters.AddWithValue("@type", factor.Type);
+                    cmd.Parameters.AddWithValue("@date", factor.Date);
+                    cmd.Parameters.AddWithValue("@value", factor.Value);
+                    cmd.Parameters.AddWithValue("@impact", factor.ImpactCoefficient);
+                    cmd.Parameters.AddWithValue("@desc", string.IsNullOrEmpty(factor.Description) ? DBNull.Value : (object)factor.Description);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
