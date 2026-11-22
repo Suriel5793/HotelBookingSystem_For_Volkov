@@ -638,5 +638,44 @@ CREATE TRIGGER update_bookings_updated_at
                 }
             }
         }
+        // ========== РАСЧЕТНЫЕ МЕТОДЫ И ЗАГРУЗКА ДАННЫХ ==========
+
+        public double CalculateRealLambda()
+        {
+            try
+            {
+                string sql = @"
+                    WITH DateRange AS (
+                        SELECT 
+                            COUNT(*) as TotalBookings,
+                            MIN(check_in_date) as MinDate,
+                            MAX(check_out_date) as MaxDate
+                        FROM Bookings
+                        WHERE status IN ('завершено', 'подтверждено')
+                    )
+                    SELECT 
+                        CASE 
+                            WHEN (MaxDate - MinDate) > 0 THEN TotalBookings::numeric / (MaxDate - MinDate)
+                            ELSE TotalBookings 
+                        END
+                    FROM DateRange;";
+
+                using (var conn = new NpgsqlConnection(DbConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    {
+                        var result = cmd.ExecuteScalar();
+                        if (result == DBNull.Value) return 0;
+                        return Convert.ToDouble(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка CalculateRealLambda: {ex.Message}", "Ошибка БД");
+                return 0;
+            }
+        }
     }
 }
