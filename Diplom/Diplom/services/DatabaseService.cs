@@ -677,5 +677,33 @@ CREATE TRIGGER update_bookings_updated_at
                 return 0;
             }
         }
+        public double CalculateRealMu()
+        {
+            try
+            {
+                string sql = @"
+                    SELECT AVG(check_out_date - check_in_date)
+                    FROM Bookings 
+                    WHERE status = 'завершено' OR status = 'подтверждено'";
+
+                using (var conn = new NpgsqlConnection(DbConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    {
+                        var result = cmd.ExecuteScalar();
+                        if (result == DBNull.Value) return 0;
+                        double avgDays = Convert.ToDouble(result);
+                        if (avgDays <= 0) return 0;
+                        return 1.0 / avgDays;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка CalculateRealMu: {ex.Message}", "Ошибка БД");
+                return 0;
+            }
+        }
     }
 }
