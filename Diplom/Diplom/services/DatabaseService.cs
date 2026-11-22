@@ -527,5 +527,19 @@ CREATE TRIGGER update_bookings_updated_at
                 }
             }
         }
+        public void DeleteFactor(int factorId)
+        {
+            string sql = "DELETE FROM External_Factors WHERE factor_id = @id";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", factorId);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
