@@ -321,5 +321,19 @@ CREATE TRIGGER update_bookings_updated_at
                 }
             }
         }
+        public void DeleteRoom(int roomId)
+        {
+            string sql = "DELETE FROM Hotel_Rooms WHERE room_id = @room_id";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@room_id", roomId);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
