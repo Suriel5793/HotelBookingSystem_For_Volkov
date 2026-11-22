@@ -726,5 +726,30 @@ CREATE TRIGGER update_bookings_updated_at
                 return 0;
             }
         }
+        public double CalculateCancellationRate()
+        {
+            try
+            {
+                string sql = @"
+                    SELECT 
+                        COUNT(*) FILTER (WHERE status IN ('отменено', 'не заехал')) * 1.0 / NULLIF(COUNT(*), 0) 
+                    FROM Bookings";
+
+                using (var conn = new NpgsqlConnection(DbConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    {
+                        var result = cmd.ExecuteScalar();
+                        if (result == DBNull.Value) return 0;
+                        return Convert.ToDouble(result);
+                    }
+                }
+            }
+            catch
+            {
+                return 0;
+            }
+        }
     }
 }
