@@ -369,5 +369,37 @@ CREATE TRIGGER update_bookings_updated_at
             }
             return bookings;
         }
+        public int AddBookingAndGetId(Booking booking)
+        {
+            // Проверка вместимости номера
+            var room = GetRoomById(booking.RoomId);
+            if (room == null)
+                throw new Exception("Номер не найден");
+            if (booking.GuestCount > room.Capacity)
+                throw new Exception($"Номер {room.RoomNumber} вмещает только {room.Capacity} гостей");
+
+            string sql = @"INSERT INTO Bookings (room_id, check_in_date, check_out_date, guest_count, total_price, booking_source, status, customer_email, customer_phone, notes) 
+                           VALUES (@room_id, @check_in, @check_out, @guest_count, @total_price, @source, @status, @email, @phone, @notes)
+                           RETURNING booking_id";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@room_id", booking.RoomId);
+                    cmd.Parameters.AddWithValue("@check_in", booking.CheckInDate);
+                    cmd.Parameters.AddWithValue("@check_out", booking.CheckOutDate);
+                    cmd.Parameters.AddWithValue("@guest_count", booking.GuestCount);
+                    cmd.Parameters.AddWithValue("@total_price", booking.TotalPrice);
+                    cmd.Parameters.AddWithValue("@source", booking.BookingSource);
+                    cmd.Parameters.AddWithValue("@status", booking.Status);
+                    cmd.Parameters.AddWithValue("@email", string.IsNullOrEmpty(booking.CustomerEmail) ? (object)DBNull.Value : booking.CustomerEmail);
+                    cmd.Parameters.AddWithValue("@phone", string.IsNullOrEmpty(booking.CustomerPhone) ? (object)DBNull.Value : booking.CustomerPhone);
+                    cmd.Parameters.AddWithValue("@notes", string.IsNullOrEmpty(booking.Notes) ? (object)DBNull.Value : booking.Notes);
+                    return (int)cmd.ExecuteScalar();
+                }
+            }
+        }
     }
 }
