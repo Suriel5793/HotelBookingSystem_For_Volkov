@@ -401,5 +401,47 @@ CREATE TRIGGER update_bookings_updated_at
                 }
             }
         }
+        public void UpdateBooking(Booking booking)
+        {
+            // Проверка вместимости номера
+            var room = GetRoomById(booking.RoomId);
+            if (room == null)
+                throw new Exception("Номер не найден");
+            if (booking.GuestCount > room.Capacity)
+                throw new Exception($"Номер {room.RoomNumber} вмещает только {room.Capacity} гостей");
+
+            string sql = @"UPDATE Bookings SET 
+                           room_id = @room_id,
+                           check_in_date = @check_in,
+                           check_out_date = @check_out,
+                           guest_count = @guest_count,
+                           total_price = @total_price,
+                           booking_source = @source,
+                           status = @status,
+                           customer_email = @email,
+                           customer_phone = @phone,
+                           notes = @notes
+                           WHERE booking_id = @booking_id";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@booking_id", booking.BookingId);
+                    cmd.Parameters.AddWithValue("@room_id", booking.RoomId);
+                    cmd.Parameters.AddWithValue("@check_in", booking.CheckInDate);
+                    cmd.Parameters.AddWithValue("@check_out", booking.CheckOutDate);
+                    cmd.Parameters.AddWithValue("@guest_count", booking.GuestCount);
+                    cmd.Parameters.AddWithValue("@total_price", booking.TotalPrice);
+                    cmd.Parameters.AddWithValue("@source", booking.BookingSource);
+                    cmd.Parameters.AddWithValue("@status", booking.Status);
+                    cmd.Parameters.AddWithValue("@email", string.IsNullOrEmpty(booking.CustomerEmail) ? (object)DBNull.Value : booking.CustomerEmail);
+                    cmd.Parameters.AddWithValue("@phone", string.IsNullOrEmpty(booking.CustomerPhone) ? (object)DBNull.Value : booking.CustomerPhone);
+                    cmd.Parameters.AddWithValue("@notes", string.IsNullOrEmpty(booking.Notes) ? (object)DBNull.Value : booking.Notes);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
     }
 }
