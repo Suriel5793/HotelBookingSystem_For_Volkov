@@ -770,5 +770,39 @@ CREATE TRIGGER update_bookings_updated_at
                 }
             }
         }
+        public List<ExternalFactor> GetActiveFactors(DateTime date)
+        {
+            var factors = new List<ExternalFactor>();
+            string sql = @"
+                SELECT factor_id, type, date, value, impact_coefficient, description
+                FROM External_Factors 
+                WHERE date <= @date AND date >= @date - INTERVAL '7 days'
+                ORDER BY impact_coefficient DESC";
+
+            using (var conn = new NpgsqlConnection(DbConnectionString))
+            {
+                conn.Open();
+                using (var cmd = new NpgsqlCommand(sql, conn))
+                {
+                    cmd.Parameters.AddWithValue("@date", date);
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            factors.Add(new ExternalFactor
+                            {
+                                FactorId = reader.GetInt32(0),
+                                Type = reader.GetString(1),
+                                Date = reader.GetDateTime(2),
+                                Value = reader.GetString(3),
+                                ImpactCoefficient = reader.GetDecimal(4),
+                                Description = reader.IsDBNull(5) ? "" : reader.GetString(5)
+                            });
+                        }
+                    }
+                }
+            }
+            return factors;
+        }
     }
 }
