@@ -705,5 +705,26 @@ CREATE TRIGGER update_bookings_updated_at
                 return 0;
             }
         }
+        public int GetRealRoomCount()
+        {
+            try
+            {
+                string sql = "SELECT COUNT(*) FROM Hotel_Rooms WHERE status != 'ремонт'";
+
+                using (var conn = new NpgsqlConnection(DbConnectionString))
+                {
+                    conn.Open();
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    {
+                        return Convert.ToInt32(cmd.ExecuteScalar());
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка GetRealRoomCount: {ex.Message}", "Ошибка БД");
+                return 0;
+            }
+        }
     }
 }
