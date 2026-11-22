@@ -804,5 +804,15 @@ CREATE TRIGGER update_bookings_updated_at
             }
             return factors;
         }
+        public void LoadAllDataToStore()
+        {
+            DataStore.Rooms = GetAllRooms();
+            DataStore.Bookings = GetAllBookings();
+
+            if (DataStore.Rooms.Count > 0)
+                DataStore.NextRoomId = DataStore.Rooms.Max(r => r.RoomId) + 1;
+            if (DataStore.Bookings.Count > 0)
+                DataStore.NextBookingId = DataStore.Bookings.Max(b => b.BookingId) + 1;
+        }
     }
 }
