@@ -41,5 +41,14 @@ namespace Diplom.Forms
                 }
             }
         }
+
+        private void сменитьПользователяToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Вы уверены, что хотите выйти из аккаунта?", "Смена пользователя", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                DataStore.CurrentUser = null;
+                Application.Restart();
+            }
+        }
     }
 }
