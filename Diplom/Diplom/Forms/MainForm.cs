@@ -18,5 +18,11 @@ namespace Diplom.Forms
         private void рекомендацииToolStripMenuItem_Click(object sender, EventArgs e) => new ForecastForm().ShowDialog();
         private void управлениеФакторамиToolStripMenuItem_Click(object sender, EventArgs e) => new ExternalFactorsForm().ShowDialog();
         private void управлениеПользователямиToolStripMenuItem_Click(object sender, EventArgs e) => new UsersForm().ShowDialog();
+
+        private void выходИзПрограммыToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Вы действительно хотите выйти?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                Application.Exit();
+        }
     }
 }
