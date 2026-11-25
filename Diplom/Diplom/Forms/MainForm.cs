@@ -50,5 +50,10 @@ namespace Diplom.Forms
                 Application.Restart();
             }
         }
+
+        private void оПрограммеToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Дипломная работа\nТема: Разработка информационной системы для управления бронированием\nМодель: M/M/c\n© 2026", "О программе");
+        }
     }
 }
