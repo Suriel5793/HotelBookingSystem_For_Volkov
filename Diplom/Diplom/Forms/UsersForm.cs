@@ -78,5 +78,10 @@ namespace Diplom.Forms
                 LoadData();
             }
         }
+
+        private void BtnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }
