@@ -58,5 +58,25 @@ namespace Diplom.Forms
                 MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка БД", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private void BtnDeleteUser_Click(object sender, EventArgs e)
+        {
+            if (dgvUsers.CurrentRow == null) return;
+
+            int userId = (int)dgvUsers.CurrentRow.Cells["UserId"].Value;
+            string login = dgvUsers.CurrentRow.Cells["Логин"].Value.ToString();
+
+            if (login == "admin")
+            {
+                MessageBox.Show("Нельзя удалить главного администратора", "Запрещено", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show($"Удалить пользователя {login}?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                _db.DeleteUser(userId);
+                LoadData();
+            }
+        }
     }
 }
