@@ -19,5 +19,39 @@ namespace Diplom.Forms
             LoadData();
             SetEditMode(false);
         }
+
+        private void LoadData()
+        {
+            dgvRooms.DataSource = null;
+            dgvRooms.DataSource = DataStore.Rooms.Select(r => new
+            {
+                r.RoomId,
+                r.RoomNumber,
+                r.Category,
+                r.BasePricePerNight,
+                r.MaintenanceCost,
+                r.Capacity,
+                r.Status
+            }).ToList();
+
+            if (dgvRooms.Columns.Count > 0)
+            {
+                dgvRooms.Columns["RoomId"].HeaderText = "ID";
+                dgvRooms.Columns["RoomNumber"].HeaderText = "Номер";
+                dgvRooms.Columns["Category"].HeaderText = "Категория";
+                dgvRooms.Columns["BasePricePerNight"].HeaderText = "Цена за ночь, руб.";
+                dgvRooms.Columns["MaintenanceCost"].HeaderText = "Затраты в сутки, руб.";
+                dgvRooms.Columns["Capacity"].HeaderText = "Вместимость";
+                dgvRooms.Columns["Status"].HeaderText = "Статус";
+            }
+
+            dgvRooms.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            UpdateStatusLabel();
+        }
+
+        private void UpdateStatusLabel()
+        {
+            lblStatus.Text = $"Всего номеров: {DataStore.Rooms.Count}";
+        }
     }
 }
