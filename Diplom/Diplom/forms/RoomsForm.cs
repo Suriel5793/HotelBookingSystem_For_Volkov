@@ -53,5 +53,21 @@ namespace Diplom.Forms
         {
             lblStatus.Text = $"Всего номеров: {DataStore.Rooms.Count}";
         }
+
+        private void SetEditMode(bool enable)
+        {
+            grpEdit.Enabled = enable;
+            txtRoomNumber.Enabled = enable;
+            txtCategory.Enabled = enable;
+            txtPrice.Enabled = enable;
+            txtCapacity.Enabled = enable;
+            txtMaintenanceCost.Enabled = enable;
+            cmbStatus.Enabled = enable;
+            btnSave.Enabled = enable;
+            btnCancel.Enabled = enable;
+            btnAdd.Enabled = !enable;
+            btnEdit.Enabled = !enable;
+            btnDelete.Enabled = !enable;
+        }
     }
 }
