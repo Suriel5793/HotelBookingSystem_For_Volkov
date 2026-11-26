@@ -227,5 +227,10 @@ namespace Diplom.Forms
             int roomId = (int)dgvRooms.CurrentRow.Cells["RoomId"].Value;
             return DataStore.Rooms.FirstOrDefault(r => r.RoomId == roomId);
         }
+
+        private void BtnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
     }
 }
