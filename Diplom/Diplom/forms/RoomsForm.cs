@@ -179,5 +179,10 @@ namespace Diplom.Forms
             LoadData();
             CancelEdit();
         }
+
+        private void BtnCancel_Click(object sender, EventArgs e)
+        {
+            CancelEdit();
+        }
     }
 }
