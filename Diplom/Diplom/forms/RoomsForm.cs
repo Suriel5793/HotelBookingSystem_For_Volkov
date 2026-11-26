@@ -69,5 +69,20 @@ namespace Diplom.Forms
             btnEdit.Enabled = !enable;
             btnDelete.Enabled = !enable;
         }
+
+        private void BtnAdd_Click(object sender, EventArgs e)
+        {
+            txtRoomNumber.Text = "";
+            txtCategory.Text = "";
+            txtPrice.Text = "";
+            txtCapacity.Text = "";
+            txtMaintenanceCost.Text = "";
+            cmbStatus.SelectedIndex = -1;
+
+            _isEditing = false;
+            _currentEditId = -1;
+            SetEditMode(true);
+            txtRoomNumber.Focus();
+        }
     }
 }
