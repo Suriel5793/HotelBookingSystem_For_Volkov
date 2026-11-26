@@ -184,5 +184,19 @@ namespace Diplom.Forms
         {
             CancelEdit();
         }
+
+        private void CancelEdit()
+        {
+            txtRoomNumber.Clear();
+            txtCategory.Clear();
+            txtPrice.Clear();
+            txtCapacity.Clear();
+            txtMaintenanceCost.Clear();
+            cmbStatus.SelectedIndex = -1;
+
+            _isEditing = false;
+            _currentEditId = -1;
+            SetEditMode(false);
+        }
     }
 }
