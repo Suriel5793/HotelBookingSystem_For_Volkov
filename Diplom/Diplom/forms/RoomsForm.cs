@@ -198,5 +198,27 @@ namespace Diplom.Forms
             _currentEditId = -1;
             SetEditMode(false);
         }
+
+        private void BtnDelete_Click(object sender, EventArgs e)
+        {
+            var selectedRoom = GetSelectedRoom();
+            if (selectedRoom == null) return;
+
+            bool hasActiveBookings = DataStore.Bookings.Any(b => b.RoomId == selectedRoom.RoomId && b.Status != "отменено");
+
+            if (hasActiveBookings)
+            {
+                MessageBox.Show($"Номер {selectedRoom.RoomNumber} имеет активные бронирования.\n\nСначала отмените или удалите их.",
+                    "Нельзя удалить номер", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show($"Удалить номер {selectedRoom.RoomNumber}?", "Подтверждение", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                _db.DeleteRoom(selectedRoom.RoomId);
+                DataStore.Rooms.RemoveAll(r => r.RoomId == selectedRoom.RoomId);
+                LoadData();
+            }
+        }
     }
 }
