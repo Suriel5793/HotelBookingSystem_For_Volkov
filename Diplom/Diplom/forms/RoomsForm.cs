@@ -220,5 +220,12 @@ namespace Diplom.Forms
                 LoadData();
             }
         }
+
+        private HotelRoom GetSelectedRoom()
+        {
+            if (dgvRooms.CurrentRow == null) return null;
+            int roomId = (int)dgvRooms.CurrentRow.Cells["RoomId"].Value;
+            return DataStore.Rooms.FirstOrDefault(r => r.RoomId == roomId);
+        }
     }
 }
