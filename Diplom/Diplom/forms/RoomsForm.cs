@@ -84,5 +84,29 @@ namespace Diplom.Forms
             SetEditMode(true);
             txtRoomNumber.Focus();
         }
+
+        private void BtnEdit_Click(object sender, EventArgs e)
+        {
+            if (dgvRooms.CurrentRow == null)
+            {
+                MessageBox.Show("Выберите номер для редактирования", "Внимание", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var selectedRoom = GetSelectedRoom();
+            if (selectedRoom == null) return;
+
+            txtRoomNumber.Text = selectedRoom.RoomNumber;
+            txtCategory.Text = selectedRoom.Category;
+            txtPrice.Text = selectedRoom.BasePricePerNight.ToString();
+            txtMaintenanceCost.Text = selectedRoom.MaintenanceCost.ToString();
+            txtCapacity.Text = selectedRoom.Capacity.ToString();
+            cmbStatus.SelectedItem = selectedRoom.Status;
+
+            _isEditing = true;
+            _currentEditId = selectedRoom.RoomId;
+            SetEditMode(true);
+            txtRoomNumber.Focus();
+        }
     }
 }
