@@ -108,5 +108,76 @@ namespace Diplom.Forms
             SetEditMode(true);
             txtRoomNumber.Focus();
         }
+
+        private void BtnSave_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtRoomNumber.Text) || string.IsNullOrWhiteSpace(txtCategory.Text))
+            {
+                MessageBox.Show("Заполните номер комнаты и категорию", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!decimal.TryParse(txtPrice.Text, out decimal price) || price <= 0)
+            {
+                MessageBox.Show("Введите корректную цену (число > 0)", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!decimal.TryParse(txtMaintenanceCost.Text, out decimal maintCost) || maintCost < 0)
+            {
+                MessageBox.Show("Введите корректные затраты (число >= 0)", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (!int.TryParse(txtCapacity.Text, out int capacity) || capacity <= 0 || capacity > 10)
+            {
+                MessageBox.Show("Введите корректную вместимость (1-10)", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string status = cmbStatus.SelectedItem?.ToString() ?? "свободен";
+
+            if (_isEditing)
+            {
+                var room = DataStore.Rooms.FirstOrDefault(r => r.RoomId == _currentEditId);
+                if (room != null)
+                {
+                    room.RoomNumber = txtRoomNumber.Text;
+                    room.Category = txtCategory.Text;
+                    room.BasePricePerNight = price;
+                    room.Capacity = capacity;
+                    room.MaintenanceCost = maintCost;
+                    room.Status = status;
+                    room.UpdatedAt = DateTime.Now;
+
+                    _db.UpdateRoom(room);
+                    MessageBox.Show("Номер успешно обновлён", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                var newRoom = new HotelRoom
+                {
+                    RoomNumber = txtRoomNumber.Text,
+                    Category = txtCategory.Text,
+                    BasePricePerNight = price,
+                    Capacity = capacity,
+                    MaintenanceCost = maintCost,
+                    Status = status,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+
+                int newId = _db.AddRoomAndGetId(newRoom);
+                newRoom.RoomId = newId;
+                DataStore.Rooms.Add(newRoom);
+
+                if (newId >= DataStore.NextRoomId) DataStore.NextRoomId = newId + 1;
+                MessageBox.Show("Номер успешно добавлен", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
+            LoadData();
+            CancelEdit();
+        }
     }
 }
